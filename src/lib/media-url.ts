@@ -19,6 +19,10 @@ export function resolveMediaUrl(value?: string | null) {
 		return `${API_ORIGIN}/${value}`;
 	}
 
+	if (value.startsWith('aquzera-api.eu-west-2.elasticbeanstalk.com/uploads/')) {
+		return `https://${value}`;
+	}
+
 	try {
 		const url = new URL(value);
 
