@@ -1,0 +1,122 @@
+import { useState } from 'react';
+import { useLogin, useVerifyAdminOtp } from '@/features/auth/hooks';
+import { authStore } from '@/lib/auth-store';
+import { clearGuestCartItems, getGuestCartItems } from '@/lib/guest-cart';
+
+export function LoginPage() {
+	const [email, setEmail] = useState('superadmin@example.com');
+	const [password, setPassword] = useState('password123');
+	const [otpEmail, setOtpEmail] = useState('');
+	const [code, setCode] = useState('');
+	const loginMutation = useLogin();
+	const otpMutation = useVerifyAdminOtp();
+	const isOtpStep = Boolean(otpEmail);
+
+	async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+		event.preventDefault();
+		if (isOtpStep) {
+			const result = await otpMutation.mutateAsync({
+				email: otpEmail,
+				code,
+			});
+			authStore.setSession(result.accessToken, result.user);
+			clearGuestCartItems();
+			window.location.href = result.user.role === 'writer' ? '/blogs' : '/';
+			return;
+		}
+
+		const guestCartItems = getGuestCartItems();
+		const result = await loginMutation.mutateAsync({
+			email,
+			password,
+			guestCartItems,
+		});
+		if ('requiresOtp' in result) {
+			setOtpEmail(result.email);
+			return;
+		}
+		authStore.setSession(result.accessToken, result.user);
+		clearGuestCartItems();
+		window.location.href = result.user.role === 'writer' ? '/blogs' : '/';
+	}
+
+	return (
+		<div className='flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,#03D4FF22,transparent_30%),linear-gradient(180deg,#f8fbff_0%,#eef4ff_100%)] p-6'>
+			<div className='w-full max-w-md rounded-[28px] border border-white/60 bg-white/90 p-8 shadow-soft backdrop-blur'>
+				<div className='mb-8'>
+					<img
+						src='/src/assets/aquzera_logo.png'
+						alt='Aquzera Logo'
+						className='h-20 object-contain mb-3 mx-auto'
+					/>
+					<h1 className='mt-3 text-3xl font-semibold tracking-tight text-slate-900'>
+						{isOtpStep ? 'Enter your admin code' : 'Sign in to the admin console'}
+					</h1>
+					<p className='mt-2 text-sm text-slate-500'>
+						{isOtpStep
+							? `We sent a one-time code to ${otpEmail}.`
+							: 'Manage customers, operations, jobs, and service queues from one dashboard.'}
+					</p>
+				</div>
+
+				<form className='space-y-4' onSubmit={handleSubmit}>
+					{isOtpStep ? (
+						<div>
+							<label className='mb-2 block text-sm font-medium text-slate-700'>
+								One-time code
+							</label>
+							<input
+								inputMode='numeric'
+								className='w-full rounded-2xl border border-slate-200 px-4 py-3 text-center text-xl font-semibold tracking-[0.3em] outline-none transition focus:border-secondary'
+								value={code}
+								onChange={(event) => setCode(event.target.value)}
+								maxLength={6}
+							/>
+						</div>
+					) : (
+						<>
+							<div>
+								<label className='mb-2 block text-sm font-medium text-slate-700'>
+									Email
+								</label>
+								<input
+									className='w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-secondary'
+									value={email}
+									onChange={(event) => setEmail(event.target.value)}
+								/>
+							</div>
+							<div>
+								<label className='mb-2 block text-sm font-medium text-slate-700'>
+									Password
+								</label>
+								<input
+									type='password'
+									className='w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-secondary'
+									value={password}
+									onChange={(event) => setPassword(event.target.value)}
+								/>
+							</div>
+						</>
+					)}
+
+					{loginMutation.error || otpMutation.error ? (
+						<p className='rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700'>
+							{loginMutation.error?.message || otpMutation.error?.message}
+						</p>
+					) : null}
+
+					<button
+						type='submit'
+						disabled={loginMutation.isPending || otpMutation.isPending}
+						className='w-full rounded-2xl bg-secondary px-4 py-3 text-sm font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60'>
+						{loginMutation.isPending || otpMutation.isPending
+							? 'Verifying...'
+							: isOtpStep
+								? 'Verify code'
+								: 'Sign in'}
+					</button>
+				</form>
+			</div>
+		</div>
+	);
+}
