@@ -19,6 +19,7 @@ import {
 import { authStore } from '@/lib/auth-store';
 import { Role } from '@/lib/roles';
 import { cn } from '@/lib/utils';
+import aquzeraLogo from '@/assets/aquzera_logo.png';
 
 const items = [
 	{
@@ -121,7 +122,7 @@ export function Sidebar() {
 			<div className='flex h-20 items-center px-6'>
 				<div className='flex flex-col gap-1 mt-30'>
 					<img
-						src='/src/assets/aquzera_logo.png'
+						src={aquzeraLogo}
 						alt='Aquzera Logo'
 						className='h-12.4 w-[70%] object-contain mt-20'
 					/>

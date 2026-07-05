@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLogin, useVerifyAdminOtp } from '@/features/auth/hooks';
 import { authStore } from '@/lib/auth-store';
 import { clearGuestCartItems, getGuestCartItems } from '@/lib/guest-cart';
+import aquzeraLogo from '@/assets/aquzera_logo.png';
 
 export function LoginPage() {
 	const [email, setEmail] = useState('superadmin@example.com');
@@ -45,7 +46,7 @@ export function LoginPage() {
 			<div className='w-full max-w-md rounded-[28px] border border-white/60 bg-white/90 p-8 shadow-soft backdrop-blur'>
 				<div className='mb-8'>
 					<img
-						src='/src/assets/aquzera_logo.png'
+						src={aquzeraLogo}
 						alt='Aquzera Logo'
 						className='h-20 object-contain mb-3 mx-auto'
 					/>
