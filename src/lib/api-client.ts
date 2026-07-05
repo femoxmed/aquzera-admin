@@ -1,8 +1,5 @@
 import { authStore } from '@/lib/auth-store';
-
-const API_BASE_URL =
-	(import.meta as ImportMeta & { env?: { VITE_API_BASE_URL?: string } }).env
-		?.VITE_API_BASE_URL ?? 'http://localhost:4000/api';
+import { API_BASE_URL, normalizeMediaUrls } from '@/lib/media-url';
 
 type ApiOptions = RequestInit & {
 	query?: Record<string, string | number | undefined | null>;
@@ -62,5 +59,5 @@ export async function apiClient<T>(
 		);
 	}
 
-	return payload as T;
+	return normalizeMediaUrls(payload) as T;
 }

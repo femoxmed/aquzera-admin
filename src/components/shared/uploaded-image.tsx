@@ -4,6 +4,7 @@ import {
 	deleteProductImage,
 } from '@/features/products/api';
 import { toast } from 'react-hot-toast';
+import { resolveMediaUrl, uploadKeyFromUrl } from '@/lib/media-url';
 
 interface UploadedImageProps {
 	url: string;
@@ -23,6 +24,7 @@ export const UploadedImage: React.FC<UploadedImageProps> = ({
 	size = 'md',
 }) => {
 	const [deleting, setDeleting] = useState(false);
+	const imageUrl = resolveMediaUrl(url) ?? url;
 
 	const handleDelete = async () => {
 		if (!window.confirm('Are you sure you want to delete this image?')) {
@@ -43,7 +45,7 @@ export const UploadedImage: React.FC<UploadedImageProps> = ({
 			if (productId && imageField) {
 				await deleteProductImage(productId, imageField, imageIndex);
 			} else {
-				const key = url.split('/').slice(3).join('/');
+				const key = uploadKeyFromUrl(url);
 				await deleteUploadedFile(key);
 			}
 
@@ -66,7 +68,7 @@ export const UploadedImage: React.FC<UploadedImageProps> = ({
 		<div
 			className={`relative rounded-lg overflow-hidden ${sizeClasses[size]} group`}>
 			<img
-				src={url}
+				src={imageUrl}
 				alt='Uploaded image'
 				className='w-full h-full object-cover'
 			/>
