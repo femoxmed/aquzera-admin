@@ -76,7 +76,7 @@ export function DashboardPage() {
 				<MetricCard
 					title='Orders'
 					value={String(metrics.orderCount)}
-					helper='Orders created for customers'
+					helper='Paid customer orders'
 					icon={<ShoppingCart size={22} />}
 				/>
 				<MetricCard
@@ -100,13 +100,13 @@ export function DashboardPage() {
 				<MetricCard
 					title='Monthly Revenue'
 					value={currency(metrics.monthlyRevenue)}
-					helper='Invoice-linked revenue snapshot'
+					helper='Paid invoice revenue snapshot'
 					icon={<Wallet size={22} />}
 				/>
 				<MetricCard
 					title='Invoices'
 					value={String(metrics.invoiceCount ?? 0)}
-					helper='Invoices generated where billing applies'
+					helper='Invoices confirmed as paid'
 					icon={<Receipt size={22} />}
 				/>
 				<MetricCard

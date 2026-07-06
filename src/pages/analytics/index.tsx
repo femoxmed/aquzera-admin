@@ -13,9 +13,9 @@ export function AnalyticsPage() {
       <PageHeader title='Business Analytics' description='Monitor growth, revenue, support demand, and overall operating efficiency.' />
       <div className='grid gap-5 md:grid-cols-2 xl:grid-cols-4'>
         <MetricCard title='Customer Base' value={String(metrics.customerCount)} helper='Total customers in CRM' icon={<Users size={22} />} />
-        <MetricCard title='Revenue' value={currency(metrics.monthlyRevenue)} helper='Invoice-driven earnings' icon={<Wallet size={22} />} />
+        <MetricCard title='Revenue' value={currency(metrics.monthlyRevenue)} helper='Paid invoice earnings' icon={<Wallet size={22} />} />
         <MetricCard title='Open Tickets' value={String(metrics.openSupportTickets)} helper='Support tickets requiring action' icon={<LifeBuoy size={22} />} />
-        <MetricCard title='Order Volume' value={String(metrics.orderCount)} helper='All order records in platform' icon={<BarChart3 size={22} />} />
+        <MetricCard title='Order Volume' value={String(metrics.orderCount)} helper='Paid order records in platform' icon={<BarChart3 size={22} />} />
       </div>
     </section>
   );

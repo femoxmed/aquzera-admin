@@ -10,11 +10,11 @@ export function RevenuePage() {
 
   return (
     <section>
-      <PageHeader title='Revenue' description='Track invoice-driven revenue, order volume, and pending operational work.' />
+      <PageHeader title='Revenue' description='Track paid revenue, paid order volume, and pending operational work.' />
       <div className='grid gap-5 md:grid-cols-2 xl:grid-cols-4'>
-        <MetricCard title='Monthly Revenue' value={currency(metrics.monthlyRevenue)} helper='Invoice-backed revenue snapshot' icon={<Wallet size={22} />} />
-        <MetricCard title='Invoices' value={String(metrics.invoiceCount)} helper='Invoices generated from orders' icon={<Receipt size={22} />} />
-        <MetricCard title='Orders' value={String(metrics.orderCount)} helper='Order records in the platform' icon={<ShoppingCart size={22} />} />
+        <MetricCard title='Paid Revenue' value={currency(metrics.monthlyRevenue)} helper='Paid invoice-backed revenue' icon={<Wallet size={22} />} />
+        <MetricCard title='Paid Invoices' value={String(metrics.invoiceCount)} helper='Invoices confirmed as paid' icon={<Receipt size={22} />} />
+        <MetricCard title='Paid Orders' value={String(metrics.orderCount)} helper='Orders confirmed as paid' icon={<ShoppingCart size={22} />} />
         <MetricCard title='Service Due' value={String(metrics.pendingServiceCount)} helper='Pending service actions' icon={<Activity size={22} />} />
       </div>
     </section>
