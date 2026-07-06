@@ -13,7 +13,7 @@ export type CreateUserPayload = {
 	fullName: string;
 	email: string;
 	password: string;
-	role: 'super_admin' | 'admin' | 'technician' | 'user';
+	role: 'customer' | 'super_admin' | 'admin' | 'technician' | 'writer';
 	isActive?: boolean;
 };
 
@@ -39,5 +39,18 @@ export function updateUser(
 	return apiClient<UserRow>(`/auth/users/${userId}`, {
 		method: 'PATCH',
 		body: JSON.stringify(payload),
+	});
+}
+
+export function updateUserStatus(userId: string, isActive: boolean) {
+	return apiClient<UserRow>(`/auth/users/${userId}/status`, {
+		method: 'PATCH',
+		body: JSON.stringify({ isActive }),
+	});
+}
+
+export function deleteUser(userId: string) {
+	return apiClient<{ deleted: boolean; id: string }>(`/auth/users/${userId}`, {
+		method: 'DELETE',
 	});
 }

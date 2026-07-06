@@ -4,13 +4,21 @@ import { Modal } from '@/components/shared/modal';
 import { PageHeader } from '@/components/shared/page-header';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { useToast } from '@/components/shared/toast-provider';
-import { useCreateUser, useUsers, useUpdateUser } from '@/features/users/hooks';
+import {
+	useCreateUser,
+	useDeleteUser,
+	useUsers,
+	useUpdateUser,
+	useUpdateUserStatus,
+} from '@/features/users/hooks';
 import type { UserRow, CreateUserPayload } from '@/features/users/api';
 
 export function UsersPage() {
 	const { data } = useUsers();
 	const createUserMutation = useCreateUser();
 	const updateUserMutation = useUpdateUser();
+	const updateUserStatusMutation = useUpdateUserStatus();
+	const deleteUserMutation = useDeleteUser();
 	const { push } = useToast();
 	const [roleFilter, setRoleFilter] = useState('all');
 	const [open, setOpen] = useState(false);
@@ -90,6 +98,59 @@ export function UsersPage() {
 						}}>
 						Edit
 					</button>
+					<button
+						className='text-sm text-amber-700 hover:text-amber-900 font-medium px-2 py-1 rounded hover:bg-amber-50'
+						disabled={updateUserStatusMutation.isPending}
+						onClick={async (e) => {
+							e.stopPropagation();
+							const nextStatus = row.active === false || row.isActive === false;
+							try {
+								await updateUserStatusMutation.mutateAsync({
+									userId: row.id,
+									isActive: nextStatus,
+								});
+								push({
+									title: nextStatus ? 'User enabled' : 'User disabled',
+								});
+							} catch (error) {
+								push({
+									title: 'Unable to update user status',
+									description:
+										error instanceof Error
+											? error.message
+											: 'An unexpected error occurred.',
+									variant: 'error',
+								});
+							}
+						}}>
+						{row.active === false || row.isActive === false
+							? 'Enable'
+							: 'Disable'}
+					</button>
+					<button
+						className='text-sm text-red-600 hover:text-red-800 font-medium px-2 py-1 rounded hover:bg-red-50'
+						disabled={deleteUserMutation.isPending}
+						onClick={async (e) => {
+							e.stopPropagation();
+							if (!window.confirm(`Delete ${row.email}? This cannot be undone.`)) {
+								return;
+							}
+							try {
+								await deleteUserMutation.mutateAsync(row.id);
+								push({ title: 'User deleted' });
+							} catch (error) {
+								push({
+									title: 'Unable to delete user',
+									description:
+										error instanceof Error
+											? error.message
+											: 'An unexpected error occurred.',
+									variant: 'error',
+								});
+							}
+						}}>
+						Delete
+					</button>
 				</div>
 			),
 		},
@@ -99,7 +160,7 @@ export function UsersPage() {
 		<section className='space-y-6'>
 			<PageHeader
 				title='Users'
-				description='Create and manage super admin, admin, technician, and user accounts.'
+				description='Create and manage customer, super admin, admin, technician, and writer accounts.'
 			/>
 			<DataTable
 				rows={filteredRows}
@@ -112,10 +173,10 @@ export function UsersPage() {
 						className='rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-secondary'>
 						<option value='all'>All Roles</option>
 						<option value='customer'>Customers</option>
-						<option value='user'>Users</option>
-						<option value='technician'>Technicians</option>
-						<option value='admin'>Admins</option>
 						<option value='super_admin'>Super Admins</option>
+						<option value='admin'>Admins</option>
+						<option value='technician'>Technicians</option>
+						<option value='writer'>Writers</option>
 					</select>
 				}
 				actions={
@@ -129,8 +190,8 @@ export function UsersPage() {
 			<Modal
 				open={open}
 				onClose={() => setOpen(false)}
-				title='Create internal user'
-				description='Create a technician or admin account. Onboarding credentials will be sent by email.'
+				title='Create user'
+				description='Create a customer, super admin, admin, technician, or writer account. Onboarding credentials will be sent by email.'
 				footer={
 					<>
 						<button
@@ -148,10 +209,11 @@ export function UsersPage() {
 										email: form.email,
 										password: form.password,
 										role: form.role as
+											| 'customer'
 											| 'super_admin'
 											| 'admin'
 											| 'technician'
-											| 'user',
+											| 'writer',
 										isActive: true,
 									});
 									push({
@@ -219,10 +281,10 @@ export function UsersPage() {
 							setForm((current) => ({ ...current, role: event.target.value }))
 						}>
 						<option value='customer'>Customer</option>
-						<option value='technician'>Technician</option>
-						<option value='admin'>Admin</option>
-						<option value='user'>User</option>
 						<option value='super_admin'>Super Admin</option>
+						<option value='admin'>Admin</option>
+						<option value='technician'>Technician</option>
+						<option value='writer'>Writer</option>
 					</select>
 				</div>
 			</Modal>
@@ -268,10 +330,11 @@ export function UsersPage() {
 										fullName: form.fullName,
 										email: form.email,
 										role: form.role as
+											| 'customer'
 											| 'super_admin'
 											| 'admin'
 											| 'technician'
-											| 'user',
+											| 'writer',
 									};
 
 									if (form.password) {
@@ -347,10 +410,11 @@ export function UsersPage() {
 						onChange={(event) =>
 							setForm((current) => ({ ...current, role: event.target.value }))
 						}>
-						<option value='technician'>Technician</option>
-						<option value='admin'>Admin</option>
-						<option value='user'>User</option>
+						<option value='customer'>Customer</option>
 						<option value='super_admin'>Super Admin</option>
+						<option value='admin'>Admin</option>
+						<option value='technician'>Technician</option>
+						<option value='writer'>Writer</option>
 					</select>
 				</div>
 			</Modal>
