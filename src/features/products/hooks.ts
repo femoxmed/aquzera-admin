@@ -8,10 +8,11 @@ import {
 	CreateProductPayload,
 } from './api';
 
-export function useProducts() {
+export function useProducts(options?: { enabled?: boolean }) {
 	return useQuery({
 		queryKey: ['products'],
 		queryFn: getProducts,
+		enabled: options?.enabled ?? true,
 	});
 }
 

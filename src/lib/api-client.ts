@@ -47,7 +47,7 @@ export async function apiClient<T>(
 	const payload = isJson ? await response.json().catch(() => null) : null;
 
 	if (!response.ok) {
-		if (response.status === 401 || response.status === 403) {
+		if (response.status === 401) {
 			authStore.clear();
 			if (window.location.pathname !== '/login') {
 				window.location.assign('/login');

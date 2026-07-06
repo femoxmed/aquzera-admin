@@ -9,6 +9,7 @@ import type { OrderItemRow, OrderRow } from '@/features/orders/api';
 import { useVerifyPaymentIntent } from '@/features/payments/hooks';
 import { useUsers } from '@/features/users/hooks';
 import { useProducts } from '@/features/products/hooks';
+import { authStore } from '@/lib/auth-store';
 import { currency } from '@/lib/utils';
 
 function isPaymentConfirmed(row: OrderRow) {
@@ -157,8 +158,10 @@ function OrderUnitList({
 
 export function OrdersPage() {
 	const { data } = useOrders();
-	const { data: users } = useUsers();
-	const { data: products } = useProducts();
+	const role = authStore.getRole();
+	const canCreateOrders = role === 'super_admin' || role === 'admin';
+	const { data: users } = useUsers({ enabled: canCreateOrders });
+	const { data: products } = useProducts({ enabled: canCreateOrders });
 	const createOrderMutation = useCreateOrder();
 	const updateOrderItemMutation = useUpdateOrderItemDetails();
 	const verifyPaymentMutation = useVerifyPaymentIntent();
@@ -236,11 +239,13 @@ export function OrdersPage() {
 				columns={columns}
 				searchPlaceholder='Search orders by ID, customer, or status'
 				actions={
-					<button
-						className='rounded-xl bg-secondary px-4 py-2 text-sm font-medium text-white'
-						onClick={() => setOpen(true)}>
-						Create Order
-					</button>
+					canCreateOrders ? (
+						<button
+							className='rounded-xl bg-secondary px-4 py-2 text-sm font-medium text-white'
+							onClick={() => setOpen(true)}>
+							Create Order
+						</button>
+					) : null
 				}
 			/>
 			<div className='grid gap-4'>

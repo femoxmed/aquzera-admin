@@ -9,10 +9,11 @@ import {
 	CreateUserPayload,
 } from '@/features/users/api';
 
-export function useUsers() {
+export function useUsers(options?: { enabled?: boolean }) {
 	return useQuery({
 		queryKey: ['users'],
 		queryFn: getUsers,
+		enabled: options?.enabled ?? true,
 	});
 }
 
