@@ -6,11 +6,28 @@ import { StatusBadge } from '@/components/shared/status-badge';
 import { useToast } from '@/components/shared/toast-provider';
 import { useOrders, useCreateOrder, useOrderItems, useUpdateOrderItemDetails } from '@/features/orders/hooks';
 import type { OrderItemRow, OrderRow } from '@/features/orders/api';
+import { useVerifyPaymentIntent } from '@/features/payments/hooks';
 import { useUsers } from '@/features/users/hooks';
 import { useProducts } from '@/features/products/hooks';
 import { currency } from '@/lib/utils';
 
-const columns: ColumnDef<OrderRow>[] = [
+function isPaymentConfirmed(row: OrderRow) {
+	return (
+		row.status === 'paid' ||
+		row.invoice?.status === 'paid' ||
+		row.paymentIntent?.status === 'succeeded' ||
+		Boolean(row.paymentIntent?.paidAt)
+	);
+}
+
+function createColumns({
+	onConfirmPayment,
+	verifyingPaymentIntentId,
+}: {
+	onConfirmPayment: (row: OrderRow) => void;
+	verifyingPaymentIntentId: string | null;
+}): ColumnDef<OrderRow>[] {
+	return [
 	{
 		key: 'id',
 		header: 'Order ID',
@@ -47,12 +64,52 @@ const columns: ColumnDef<OrderRow>[] = [
 		searchValue: (row) => row.status,
 	},
 	{
+		key: 'payment',
+		header: 'Payment',
+		render: (row) => {
+			const confirmed = isPaymentConfirmed(row);
+			const canRetry = !confirmed && row.paymentIntent?.id;
+
+			return (
+				<div className='space-y-2'>
+					<StatusBadge
+						value={
+							confirmed
+								? 'confirmed'
+								: row.paymentIntent?.status || row.invoice?.status || 'pending'
+						}
+					/>
+					{canRetry ? (
+						<button
+							type='button'
+							disabled={verifyingPaymentIntentId === row.paymentIntent?.id}
+							onClick={() => onConfirmPayment(row)}
+							className='block rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60'>
+							{verifyingPaymentIntentId === row.paymentIntent?.id
+								? 'Checking...'
+								: 'Confirm payment'}
+						</button>
+					) : null}
+				</div>
+			);
+		},
+		searchValue: (row) =>
+			[
+				row.invoice?.status,
+				row.paymentIntent?.status,
+				row.paymentIntent?.providerReference,
+			]
+				.filter(Boolean)
+				.join(' '),
+	},
+	{
 		key: 'createdAt',
 		header: 'Date',
 		render: (row) => row.createdAt ?? '—',
 		searchValue: (row) => row.createdAt ?? '',
 	},
-];
+	];
+}
 
 function OrderUnitList({
 	order,
@@ -104,8 +161,10 @@ export function OrdersPage() {
 	const { data: products } = useProducts();
 	const createOrderMutation = useCreateOrder();
 	const updateOrderItemMutation = useUpdateOrderItemDetails();
+	const verifyPaymentMutation = useVerifyPaymentIntent();
 	const { push } = useToast();
 	const rows: OrderRow[] = data ?? [];
+	const [verifyingPaymentIntentId, setVerifyingPaymentIntentId] = useState<string | null>(null);
 	const [open, setOpen] = useState(false);
 	const [selectedOrder, setSelectedOrder] = useState<OrderRow | null>(null);
 	const [selectedItemId, setSelectedItemId] = useState('');
@@ -130,6 +189,40 @@ export function OrdersPage() {
 			typeof crypto !== 'undefined' && 'randomUUID' in crypto
 				? crypto.randomUUID()
 				: String(Date.now()),
+	});
+	const columns = createColumns({
+		verifyingPaymentIntentId,
+		onConfirmPayment: async (order) => {
+			if (!order.paymentIntent?.id) return;
+
+			setVerifyingPaymentIntentId(order.paymentIntent.id);
+			try {
+				const result = await verifyPaymentMutation.mutateAsync(
+					order.paymentIntent.id,
+				);
+				push({
+					title:
+						result.status === 'succeeded'
+							? 'Payment confirmed'
+							: 'Payment checked',
+					description:
+						result.status === 'succeeded'
+							? 'The order and invoice have been reconciled.'
+							: `Paystack returned status: ${result.status}.`,
+				});
+			} catch (error) {
+				push({
+					title: 'Unable to confirm payment',
+					description:
+						error instanceof Error
+							? error.message
+							: 'Paystack verification failed.',
+					variant: 'error',
+				});
+			} finally {
+				setVerifyingPaymentIntentId(null);
+			}
+		},
 	});
 
 	return (

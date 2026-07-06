@@ -9,6 +9,19 @@ export type OrderRow = {
 	createdAt?: string;
 	user?: { id?: string; fullName?: string; email?: string };
 	total?: number;
+	invoice?: {
+		id: string;
+		invoiceNumber: string;
+		status: string;
+		total?: number;
+	} | null;
+	paymentIntent?: {
+		id: string;
+		status: string;
+		providerStatus?: string | null;
+		providerReference?: string | null;
+		paidAt?: string | null;
+	} | null;
 	items?: Array<{
 		id: string;
 		orderId?: string;
