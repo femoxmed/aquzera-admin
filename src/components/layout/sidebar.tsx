@@ -15,6 +15,7 @@ import {
 	Bell,
 	Tags,
 	NotebookPen,
+	CircleHelp,
 } from 'lucide-react';
 import { authStore } from '@/lib/auth-store';
 import { Role } from '@/lib/roles';
@@ -27,6 +28,12 @@ const items = [
 		label: 'Blog CMS',
 		icon: NotebookPen,
 		roles: [Role.SUPER_ADMIN, Role.ADMIN, Role.WRITER],
+	},
+	{
+		to: '/faqs',
+		label: 'FAQ CMS',
+		icon: CircleHelp,
+		roles: [Role.SUPER_ADMIN, Role.ADMIN],
 	},
 	{
 		to: '/',

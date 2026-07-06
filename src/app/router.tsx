@@ -23,6 +23,7 @@ import { ProtectedRoute } from '@/features/auth/protected-route';
 import { RoleGuard } from '@/features/auth/role-guard';
 import { Role } from '@/lib/roles';
 import { BlogsPage } from '@/pages/blogs';
+import { FaqsPage } from '@/pages/faqs';
 
 const adminRoles = [Role.SUPER_ADMIN, Role.ADMIN];
 const superAdminRoles = [Role.SUPER_ADMIN];
@@ -42,6 +43,10 @@ export const router = createBrowserRouter([
 			{
 				path: 'blogs',
 				element: <RoleGuard roles={blogRoles}><BlogsPage /></RoleGuard>,
+			},
+			{
+				path: 'faqs',
+				element: <RoleGuard roles={adminRoles}><FaqsPage /></RoleGuard>,
 			},
 			{
 				path: 'products',

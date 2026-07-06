@@ -5,8 +5,8 @@ import { clearGuestCartItems, getGuestCartItems } from '@/lib/guest-cart';
 import aquzeraLogo from '@/assets/aquzera_logo.png';
 
 export function LoginPage() {
-	const [email, setEmail] = useState('superadmin@example.com');
-	const [password, setPassword] = useState('password123');
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
 	const [otpEmail, setOtpEmail] = useState('');
 	const [code, setCode] = useState('');
 	const loginMutation = useLogin();
@@ -51,7 +51,9 @@ export function LoginPage() {
 						className='h-20 object-contain mb-3 mx-auto'
 					/>
 					<h1 className='mt-3 text-3xl font-semibold tracking-tight text-slate-900'>
-						{isOtpStep ? 'Enter your admin code' : 'Sign in to the admin console'}
+						{isOtpStep
+							? 'Enter your admin code'
+							: 'Sign in to the admin console'}
 					</h1>
 					<p className='mt-2 text-sm text-slate-500'>
 						{isOtpStep
