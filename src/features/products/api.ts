@@ -31,6 +31,7 @@ export type ProductColor = {
 	id: string;
 	label: string;
 	value: string;
+	status?: 'active' | 'inactive';
 	image?: UploadStatusResponse;
 	imageUrl?: string;
 };

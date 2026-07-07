@@ -29,7 +29,8 @@ export const emptyProductForm: ProductFormState = {
 	shortDescription: '',
 	description: '',
 	startingPriceLabel: '',
-	colors: '[{"id":"charcoal","label":"Charcoal Black","value":"#101818"}]',
+	colors:
+		'[{"id":"charcoal","label":"Charcoal Black","value":"#101818","status":"active"}]',
 	features: '[]',
 	specifications: '[]',
 	boxItems: '[]',

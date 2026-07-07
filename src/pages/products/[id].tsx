@@ -243,6 +243,9 @@ export function ProductDetailPage() {
 										<p className='font-mono text-xs text-slate-500'>
 											{color.value}
 										</p>
+										<p className='mt-1 text-xs capitalize text-slate-500'>
+											{color.status || 'active'}
+										</p>
 									</div>
 								</div>
 								{detailImageUrl(color) ? (

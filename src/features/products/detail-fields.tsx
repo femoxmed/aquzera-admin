@@ -37,6 +37,7 @@ type ColorField = {
 	id: string;
 	label: string;
 	value: string;
+	status?: 'active' | 'inactive';
 	image?: UploadStatusResponse;
 	imageUrl?: string;
 };
@@ -172,8 +173,23 @@ export function ProductDetailFields({
 											value: event.target.value,
 										})
 									}
-								/>
-							</div>
+									/>
+								</div>
+							<label className='flex flex-col gap-1 text-xs font-medium uppercase tracking-wide text-slate-500'>
+								Status
+								<select
+									className={inputClass}
+									value={color.status || 'active'}
+									onChange={(event) =>
+										updateItem('colors', colors, index, {
+											...color,
+											status: event.target.value as 'active' | 'inactive',
+										})
+									}>
+									<option value='active'>Active</option>
+									<option value='inactive'>Inactive</option>
+								</select>
+							</label>
 							<div>
 								{getStagedImageUrl(stagedImages, 'colors', index) ||
 								getImageUrl(color) ? (
@@ -212,7 +228,7 @@ export function ProductDetailFields({
 					onClick={() =>
 						setJsonField('colors', [
 							...colors,
-							{ id: '', label: '', value: '#ffffff' },
+							{ id: '', label: '', value: '#ffffff', status: 'active' },
 						])
 					}
 				/>
