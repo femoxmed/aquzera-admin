@@ -407,7 +407,14 @@ export function ProductEditPage() {
 						{existingBannerImage || bannerPreview ? (
 							<UploadedImage
 								url={existingBannerImage?.url || bannerPreview}
-								onDelete={removeBannerImage}
+								productId={existingBannerImage ? id : undefined}
+								imageField={existingBannerImage ? 'bannerImage' : undefined}
+								label='banner image'
+								onDelete={
+									existingBannerImage
+										? () => setExistingBannerImage(null)
+										: removeBannerImage
+								}
 							/>
 						) : (
 							<FileUpload
@@ -426,7 +433,14 @@ export function ProductEditPage() {
 						{existingMainImage || mainPreview ? (
 							<UploadedImage
 								url={existingMainImage?.url || mainPreview}
-								onDelete={removeMainImage}
+								productId={existingMainImage ? id : undefined}
+								imageField={existingMainImage ? 'mainImage' : undefined}
+								label='main image'
+								onDelete={
+									existingMainImage
+										? () => setExistingMainImage(null)
+										: removeMainImage
+								}
 							/>
 						) : (
 							<FileUpload
@@ -448,7 +462,15 @@ export function ProductEditPage() {
 									key={`existing-${idx}`}
 									url={image.url}
 									size='sm'
-									onDelete={() => removeGalleryImage(idx, true)}
+									productId={id}
+									imageField='galleryImages'
+									imageIndex={idx}
+									label='gallery image'
+									onDelete={() =>
+										setExistingGalleryImages((prev) =>
+											prev.filter((_, imageIndex) => imageIndex !== idx),
+										)
+									}
 								/>
 							))}
 							{galleryPreviews.map((preview, idx) => (
@@ -456,6 +478,7 @@ export function ProductEditPage() {
 									key={`new-${idx}`}
 									url={preview}
 									size='sm'
+									label='gallery image'
 									onDelete={() => removeGalleryImage(idx, false)}
 								/>
 							))}

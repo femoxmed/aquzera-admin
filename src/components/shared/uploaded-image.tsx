@@ -13,6 +13,7 @@ interface UploadedImageProps {
 	imageField?: 'bannerImage' | 'mainImage' | 'galleryImages';
 	imageIndex?: number;
 	size?: 'sm' | 'md' | 'lg';
+	label?: string;
 }
 
 export const UploadedImage: React.FC<UploadedImageProps> = ({
@@ -22,15 +23,14 @@ export const UploadedImage: React.FC<UploadedImageProps> = ({
 	imageField,
 	imageIndex,
 	size = 'md',
+	label = 'image',
 }) => {
 	const [deleting, setDeleting] = useState(false);
+	const [imageFailed, setImageFailed] = useState(false);
+	const [confirmingDelete, setConfirmingDelete] = useState(false);
 	const imageUrl = resolveMediaUrl(url) ?? url;
 
 	const handleDelete = async () => {
-		if (!window.confirm('Are you sure you want to delete this image?')) {
-			return;
-		}
-
 		setDeleting(true);
 
 		try {
@@ -51,6 +51,7 @@ export const UploadedImage: React.FC<UploadedImageProps> = ({
 
 			toast.success('Image deleted successfully');
 			onDelete?.();
+			setConfirmingDelete(false);
 		} catch (err) {
 			toast.error('Failed to delete image');
 		} finally {
@@ -67,15 +68,22 @@ export const UploadedImage: React.FC<UploadedImageProps> = ({
 	return (
 		<div
 			className={`relative rounded-lg overflow-hidden ${sizeClasses[size]} group`}>
-			<img
-				src={imageUrl}
-				alt='Uploaded image'
-				className='w-full h-full object-cover'
-			/>
+			{imageFailed ? (
+				<div className='flex h-full w-full items-center justify-center border border-dashed border-slate-300 bg-slate-50 px-2 text-center text-xs text-slate-500'>
+					Image unavailable
+				</div>
+			) : (
+				<img
+					src={imageUrl}
+					alt='Uploaded image'
+					className='w-full h-full object-cover'
+					onError={() => setImageFailed(true)}
+				/>
+			)}
 
 			<div className='absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center'>
 				<button
-					onClick={handleDelete}
+					onClick={() => setConfirmingDelete(true)}
 					disabled={deleting}
 					className='opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg disabled:opacity-50'>
 					{deleting ? (
@@ -113,6 +121,35 @@ export const UploadedImage: React.FC<UploadedImageProps> = ({
 					)}
 				</button>
 			</div>
+
+			{confirmingDelete ? (
+				<div className='absolute inset-0 z-10 flex items-center justify-center bg-slate-950/75 p-3'>
+					<div className='w-full rounded-lg bg-white p-3 text-center shadow-xl'>
+						<p className='text-sm font-semibold text-slate-900'>
+							Delete this {label}?
+						</p>
+						<p className='mt-1 text-xs text-slate-500'>
+							This removes it from the product and storage.
+						</p>
+						<div className='mt-3 grid grid-cols-2 gap-2'>
+							<button
+								type='button'
+								className='rounded-md border border-slate-200 px-2 py-1.5 text-xs font-medium text-slate-700'
+								disabled={deleting}
+								onClick={() => setConfirmingDelete(false)}>
+								Cancel
+							</button>
+							<button
+								type='button'
+								className='rounded-md bg-red-600 px-2 py-1.5 text-xs font-medium text-white disabled:opacity-60'
+								disabled={deleting}
+								onClick={handleDelete}>
+								{deleting ? 'Deleting...' : 'Delete'}
+							</button>
+						</div>
+					</div>
+				</div>
+			) : null}
 		</div>
 	);
 };

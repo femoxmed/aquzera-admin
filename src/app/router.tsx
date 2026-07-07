@@ -75,7 +75,7 @@ export const router = createBrowserRouter([
 			{
 				path: 'products/:id/edit',
 				element: (
-					<RoleGuard roles={superAdminRoles}>
+					<RoleGuard roles={adminRoles}>
 						<ProductEditPage />
 					</RoleGuard>
 				),
