@@ -169,6 +169,56 @@ export function ProductCreatePage() {
 				/>
 				<input
 					className='w-full rounded-xl border border-slate-200 px-3 py-2 text-sm'
+					placeholder='Sale price (optional)'
+					value={form.salePrice}
+					onChange={(event) =>
+						setForm((current) => ({
+							...current,
+							salePrice: event.target.value,
+						}))
+					}
+				/>
+				<input
+					className='w-full rounded-xl border border-slate-200 px-3 py-2 text-sm'
+					placeholder='Campaign label e.g. Summer Sale'
+					value={form.saleLabel}
+					onChange={(event) =>
+						setForm((current) => ({
+							...current,
+							saleLabel: event.target.value,
+						}))
+					}
+				/>
+				<label className='text-xs font-semibold uppercase tracking-wide text-slate-500'>
+					Sale starts
+					<input
+						type='datetime-local'
+						className='mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-normal normal-case tracking-normal text-slate-900'
+						value={isoToDateTimeInputValue(form.saleStartsAt)}
+						onChange={(event) =>
+							setForm((current) => ({
+								...current,
+								saleStartsAt: dateTimeInputValueToIso(event.target.value),
+							}))
+						}
+					/>
+				</label>
+				<label className='text-xs font-semibold uppercase tracking-wide text-slate-500'>
+					Sale ends
+					<input
+						type='datetime-local'
+						className='mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-normal normal-case tracking-normal text-slate-900'
+						value={isoToDateTimeInputValue(form.saleEndsAt)}
+						onChange={(event) =>
+							setForm((current) => ({
+								...current,
+								saleEndsAt: dateTimeInputValueToIso(event.target.value),
+							}))
+						}
+					/>
+				</label>
+				<input
+					className='w-full rounded-xl border border-slate-200 px-3 py-2 text-sm'
 					placeholder='Stock'
 					value={form.stock}
 					onChange={(event) =>

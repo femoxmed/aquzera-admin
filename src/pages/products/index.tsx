@@ -109,6 +109,22 @@ export function ProductsPage() {
 			/>
 			<input
 				className='w-full rounded-xl border border-slate-200 px-3 py-2 text-sm'
+				placeholder='Sale price (optional)'
+				value={form.salePrice}
+				onChange={(event) =>
+					setForm((current) => ({ ...current, salePrice: event.target.value }))
+				}
+			/>
+			<input
+				className='w-full rounded-xl border border-slate-200 px-3 py-2 text-sm'
+				placeholder='Campaign label e.g. Summer Sale'
+				value={form.saleLabel}
+				onChange={(event) =>
+					setForm((current) => ({ ...current, saleLabel: event.target.value }))
+				}
+			/>
+			<input
+				className='w-full rounded-xl border border-slate-200 px-3 py-2 text-sm'
 				placeholder='Stock'
 				value={form.stock}
 				onChange={(event) =>
@@ -157,6 +173,34 @@ export function ProductsPage() {
 						setForm((current) => ({
 							...current,
 							featuredAt: dateTimeInputValueToIso(event.target.value),
+						}))
+					}
+				/>
+			</label>
+			<label className='text-xs font-semibold uppercase tracking-wide text-slate-500'>
+				Sale starts
+				<input
+					type='datetime-local'
+					className='mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-normal normal-case tracking-normal text-slate-900'
+					value={isoToDateTimeInputValue(form.saleStartsAt)}
+					onChange={(event) =>
+						setForm((current) => ({
+							...current,
+							saleStartsAt: dateTimeInputValueToIso(event.target.value),
+						}))
+					}
+				/>
+			</label>
+			<label className='text-xs font-semibold uppercase tracking-wide text-slate-500'>
+				Sale ends
+				<input
+					type='datetime-local'
+					className='mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-normal normal-case tracking-normal text-slate-900'
+					value={isoToDateTimeInputValue(form.saleEndsAt)}
+					onChange={(event) =>
+						setForm((current) => ({
+							...current,
+							saleEndsAt: dateTimeInputValueToIso(event.target.value),
 						}))
 					}
 				/>
@@ -215,7 +259,24 @@ export function ProductsPage() {
 		{
 			key: 'price',
 			header: 'Price',
-			render: (row) => currency(Number(row.price)),
+			render: (row) =>
+				row.salePrice && Number(row.salePrice) < Number(row.price) ? (
+					<div className='space-y-1'>
+						<p className='text-xs text-slate-400 line-through'>
+							{currency(Number(row.price))}
+						</p>
+						<p className='font-semibold text-emerald-700'>
+							{currency(Number(row.salePrice))}
+						</p>
+						{row.saleLabel ? (
+							<p className='text-[11px] font-medium uppercase tracking-wide text-blue-600'>
+								{row.saleLabel}
+							</p>
+						) : null}
+					</div>
+				) : (
+					currency(Number(row.price))
+				),
 			searchValue: (row) => String(row.price),
 		},
 		{

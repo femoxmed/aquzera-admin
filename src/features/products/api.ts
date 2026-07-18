@@ -6,6 +6,10 @@ export type ProductRow = {
 	slug?: string;
 	sku: string;
 	price: number;
+	salePrice?: number | null;
+	saleLabel?: string | null;
+	saleStartsAt?: string | null;
+	saleEndsAt?: string | null;
 	stock: number;
 	shortDescription?: string | null;
 	description?: string | null;
@@ -69,6 +73,10 @@ export type CreateProductPayload = {
 	slug?: string;
 	sku: string;
 	price: number;
+	salePrice?: number | null;
+	saleLabel?: string;
+	saleStartsAt?: string | null;
+	saleEndsAt?: string | null;
 	stock: number;
 	shortDescription?: string;
 	description?: string;

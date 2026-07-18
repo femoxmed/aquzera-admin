@@ -6,6 +6,10 @@ export type ProductFormState = {
 	slug: string;
 	sku: string;
 	price: string;
+	salePrice: string;
+	saleLabel: string;
+	saleStartsAt: string;
+	saleEndsAt: string;
 	stock: string;
 	shortDescription: string;
 	description: string;
@@ -25,6 +29,10 @@ export const emptyProductForm: ProductFormState = {
 	slug: '',
 	sku: '',
 	price: '',
+	salePrice: '',
+	saleLabel: '',
+	saleStartsAt: '',
+	saleEndsAt: '',
 	stock: '',
 	shortDescription: '',
 	description: '',
@@ -71,6 +79,10 @@ export function productToForm(product: ProductRow): ProductFormState {
 		slug: product.slug || slugifyProductName(product.name),
 		sku: product.sku,
 		price: String(product.price),
+		salePrice: product.salePrice ? String(product.salePrice) : '',
+		saleLabel: product.saleLabel || '',
+		saleStartsAt: product.saleStartsAt || '',
+		saleEndsAt: product.saleEndsAt || '',
 		stock: String(product.stock),
 		shortDescription: product.shortDescription || '',
 		description: product.description || '',
@@ -92,6 +104,13 @@ export function appendProductFormData(formData: FormData, form: ProductFormState
 	formData.append('slug', slugifyProductName(form.slug || form.name));
 	formData.append('sku', form.sku.trim());
 	formData.append('price', String(Number(form.price)));
+	formData.append(
+		'salePrice',
+		form.salePrice ? String(Number(form.salePrice)) : '',
+	);
+	formData.append('saleLabel', form.saleLabel.trim());
+	formData.append('saleStartsAt', form.saleStartsAt);
+	formData.append('saleEndsAt', form.saleEndsAt);
 	formData.append('stock', String(Number(form.stock)));
 	formData.append('shortDescription', form.shortDescription.trim());
 	formData.append('description', form.description.trim());
