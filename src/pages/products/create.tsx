@@ -11,7 +11,7 @@ import {
 	type StagedProductDetailImages,
 } from '@/features/products/detail-fields';
 import { applyStagedDetailImages } from '@/features/products/detail-image-submit';
-import { useCreateProduct } from '@/features/products/hooks';
+import { useCreateProduct, useProducts } from '@/features/products/hooks';
 import {
 	appendProductFormData,
 	dateTimeInputValueToIso,
@@ -23,6 +23,7 @@ import {
 export function ProductCreatePage() {
 	const navigate = useNavigate();
 	const createProductMutation = useCreateProduct();
+	const { data: products = [] } = useProducts();
 	const { push } = useToast();
 	const [form, setForm] = useState(emptyProductForm);
 
@@ -294,12 +295,13 @@ export function ProductCreatePage() {
 					}
 				/>
 
-				<ProductDetailFields
-					form={form}
-					setForm={setForm}
-					stagedImages={stagedDetailImages}
-					onImageSelect={handleDetailImageSelect}
-					onImageRemove={handleDetailImageRemove}
+					<ProductDetailFields
+						form={form}
+						setForm={setForm}
+						availableProducts={products}
+						stagedImages={stagedDetailImages}
+						onImageSelect={handleDetailImageSelect}
+						onImageRemove={handleDetailImageRemove}
 				/>
 
 				<div className='space-y-4 md:col-span-2'>

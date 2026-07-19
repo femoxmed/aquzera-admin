@@ -4,7 +4,7 @@ import { PageHeader } from '@/components/shared/page-header';
 import { FileUpload } from '@/components/shared/file-upload';
 import { UploadedImage } from '@/components/shared/uploaded-image';
 import { useToast } from '@/components/shared/toast-provider';
-import { useProduct, useUpdateProduct } from '@/features/products/hooks';
+import { useProduct, useProducts, useUpdateProduct } from '@/features/products/hooks';
 import {
 	appendProductFormData,
 	dateTimeInputValueToIso,
@@ -29,6 +29,7 @@ export function ProductEditPage() {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
 	const { data: product, isLoading } = useProduct(id ?? '');
+	const { data: products = [] } = useProducts();
 	const updateProductMutation = useUpdateProduct();
 	const { push } = useToast();
 
@@ -441,12 +442,14 @@ export function ProductEditPage() {
 						}))
 					}
 				/>
-				<ProductDetailFields
-					form={form}
-					setForm={setForm}
-					stagedImages={stagedDetailImages}
-					onImageSelect={handleDetailImageSelect}
-					onImageRemove={handleDetailImageRemove}
+					<ProductDetailFields
+						form={form}
+						setForm={setForm}
+						availableProducts={products}
+						currentProductId={product.id}
+						stagedImages={stagedDetailImages}
+						onImageSelect={handleDetailImageSelect}
+						onImageRemove={handleDetailImageRemove}
 				/>
 
 				<div className='md:col-span-2 space-y-4 mt-4'>

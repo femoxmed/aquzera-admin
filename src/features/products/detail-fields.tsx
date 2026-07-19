@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react';
 import { FileUpload } from '@/components/shared/file-upload';
 import { UploadedImage } from '@/components/shared/uploaded-image';
-import type { UploadStatusResponse } from './api';
+import type { ProductRow, UploadStatusResponse } from './api';
 import type { ProductFormState } from './form';
 
 export type ProductDetailImageField = 'colors' | 'features' | 'boxItems';
@@ -31,6 +31,8 @@ type DetailFieldsProps = {
 		index: number,
 		image?: UploadStatusResponse,
 	) => void;
+	availableProducts?: ProductRow[];
+	currentProductId?: string;
 };
 
 type ColorField = {
@@ -76,6 +78,8 @@ export function ProductDetailFields({
 	stagedImages = {},
 	onImageSelect,
 	onImageRemove,
+	availableProducts = [],
+	currentProductId,
 }: DetailFieldsProps) {
 	const colors = parseArray<ColorField>(form.colors);
 	const features = parseArray<FeatureField>(form.features);
@@ -83,6 +87,9 @@ export function ProductDetailFields({
 	const boxItems = parseArray<BoxItemField>(form.boxItems);
 	const addOns = parseArray<{ productId: string; isCompulsory?: boolean }>(
 		form.addOns,
+	);
+	const addOnProductOptions = availableProducts.filter(
+		(product) => product.id !== currentProductId && product.status !== 'archived',
 	);
 
 	const setJsonField = <Key extends keyof ProductFormState>(
@@ -234,51 +241,64 @@ export function ProductDetailFields({
 				/>
 			</div>
 
-			<SectionHeader title='Compatible add-ons' />
-			<div className='space-y-3'>
-				{addOns.map((addOn, index) => (
-					<div key={index} className='rounded-xl border border-slate-200 p-4'>
-						<div className='grid gap-3 md:grid-cols-[1fr_auto]'>
-							<input
-								className={inputClass}
-								placeholder='Add-on product ID'
-								value={addOn.productId}
-								onChange={(event) =>
-									updateItem('addOns', addOns, index, {
-										...addOn,
-										productId: event.target.value,
-									})
-								}
-							/>
-							<label className='flex items-center gap-2 text-sm text-slate-700'>
-								<input
-									type='checkbox'
-									checked={Boolean(addOn.isCompulsory)}
+				<SectionHeader title='Compatible add-ons' />
+				<div className='space-y-3'>
+					{addOns.map((addOn, index) => (
+						<div key={index} className='rounded-xl border border-slate-200 p-4'>
+							<div className='grid gap-3 md:grid-cols-[1fr_auto]'>
+								<select
+									className={inputClass}
+									value={addOn.productId}
 									onChange={(event) =>
 										updateItem('addOns', addOns, index, {
 											...addOn,
+											productId: event.target.value,
+										})
+									}>
+									<option value=''>Select an add-on product</option>
+									{addOnProductOptions.map((product) => (
+										<option key={product.id} value={product.id}>
+											{product.name} ({product.sku})
+										</option>
+									))}
+								</select>
+								<label className='flex items-center gap-2 text-sm text-slate-700'>
+									<input
+										type='checkbox'
+										checked={Boolean(addOn.isCompulsory)}
+										onChange={(event) =>
+											updateItem('addOns', addOns, index, {
+												...addOn,
 											isCompulsory: event.target.checked,
 										})
 									}
-								/>
-								Compulsory
-							</label>
+									/>
+									Compulsory
+								</label>
+							</div>
+							<RowActions onRemove={() => removeItem('addOns', addOns, index)} />
 						</div>
-						<RowActions onRemove={() => removeItem('addOns', addOns, index)} />
-					</div>
-				))}
-				<AddButton
-					label='Add compatible add-on'
-					onClick={() =>
-						setJsonField('addOns', [
-							...addOns,
-							{ productId: '', isCompulsory: false },
-						])
-					}
-				/>
-			</div>
+					))}
+					<AddButton
+						label='Add compatible add-on'
+						onClick={() =>
+							setJsonField('addOns', [
+								...addOns,
+								{
+									productId: addOnProductOptions[0]?.id || '',
+									isCompulsory: false,
+								},
+							])
+						}
+					/>
+					{addOnProductOptions.length === 0 ? (
+						<p className='text-xs text-slate-500'>
+							Create another product first, then select it here as an add-on.
+						</p>
+					) : null}
+				</div>
 
-			<SectionHeader title='Product features' />
+				<SectionHeader title='Product features' />
 			<div className='space-y-3'>
 				{features.map((feature, index) => (
 					<div key={index} className='rounded-xl border border-slate-200 p-4'>
