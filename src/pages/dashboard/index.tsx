@@ -138,11 +138,11 @@ export function DashboardPage() {
 						</defs>
 						<CartesianGrid strokeDasharray='3 3' stroke='#f1f5f9' />
 						<XAxis dataKey='month' stroke='#94a3b8' fontSize={12} />
-						<YAxis
-							stroke='#94a3b8'
-							fontSize={12}
-							tickFormatter={(value) => `₦${(value / 1000000).toFixed(1)}M`}
-						/>
+							<YAxis
+								stroke='#94a3b8'
+								fontSize={12}
+								tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`}
+							/>
 						<Tooltip formatter={(value) => currency(Number(value))} />
 						<Area
 							type='monotone'

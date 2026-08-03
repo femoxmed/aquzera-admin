@@ -5,10 +5,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function currency(value: number) {
-	return new Intl.NumberFormat('en-NG', {
+	return new Intl.NumberFormat('en-US', {
 		style: 'currency',
-		currency: 'NGN',
-		currencyDisplay: 'narrowSymbol',
+		currency: 'USD',
 		minimumFractionDigits: 0,
 		maximumFractionDigits: 4,
 	}).format(value);
