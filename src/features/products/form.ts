@@ -73,6 +73,10 @@ export function dateTimeInputValueToIso(value: string) {
 	return Number.isNaN(date.getTime()) ? '' : date.toISOString();
 }
 
+function normalizeNairaLabel(value?: string | null) {
+	return (value || '').replace(/\$/g, '₦').replace(/\bUSD\b/gi, 'NGN');
+}
+
 export function productToForm(product: ProductRow): ProductFormState {
 	return {
 		name: product.name,
@@ -87,7 +91,8 @@ export function productToForm(product: ProductRow): ProductFormState {
 		shortDescription: product.shortDescription || '',
 		description: product.description || '',
 		startingPriceLabel:
-			product.startingPriceLabel || `Starting From ${currency(Number(product.price))}`,
+			normalizeNairaLabel(product.startingPriceLabel) ||
+			`Starting From ${currency(Number(product.price))}`,
 		colors: JSON.stringify(product.colors || [], null, 2),
 		features: JSON.stringify(product.features || [], null, 2),
 		specifications: JSON.stringify(product.specifications || [], null, 2),
@@ -114,7 +119,7 @@ export function appendProductFormData(formData: FormData, form: ProductFormState
 	formData.append('stock', String(Number(form.stock)));
 	formData.append('shortDescription', form.shortDescription.trim());
 	formData.append('description', form.description.trim());
-	formData.append('startingPriceLabel', form.startingPriceLabel.trim());
+	formData.append('startingPriceLabel', normalizeNairaLabel(form.startingPriceLabel.trim()));
 	formData.append('colors', normalizeJsonArray(form.colors, 'Colors'));
 	formData.append('features', normalizeJsonArray(form.features, 'Features'));
 	formData.append(

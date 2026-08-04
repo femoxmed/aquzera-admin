@@ -141,7 +141,7 @@ export function DashboardPage() {
 							<YAxis
 								stroke='#94a3b8'
 								fontSize={12}
-								tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`}
+								tickFormatter={(value) => `₦${(value / 1000000).toFixed(1)}M`}
 							/>
 						<Tooltip formatter={(value) => currency(Number(value))} />
 						<Area
